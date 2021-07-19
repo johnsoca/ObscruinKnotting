@@ -18,9 +18,10 @@
 %           angle between the linker to the next domain
 % N - number of nodes which include a domain and a linker
 
-sims=1000000;
+sims=10000;
 x_range = zeros(1,sims);
 y_range = zeros(1,sims);
+crossings = zeros(1,sims);
 
 % Angle distribution values
 mu_d2l = deg2rad(126); %mu of domain to linker
@@ -29,6 +30,7 @@ mu_l2d = deg2rad([93.3,58.4]); %mu of linker to domain bimodal distribution
 s_l2d = deg2rad([13.2,9.44]); %sigma of linker to domain bimodal distribution
 
 tic
+m=1;
 for sim = 1:sims
     % Initialize variables
     N = 18;
@@ -40,15 +42,18 @@ for sim = 1:sims
     y_e = zeros(1,18);
     xt = zeros(1,18);
     yt = zeros(1,18);
+    X = zeros(1,37);
+    Y = zeros(1,37);
 
     % Initialize the first position and angle of the first domain of node 1
     x(1) = rand();
     y(1) = rand();
     theta_h(1) = plus_minus * rand()*pi; % initial orienation of domain doens't matter 
 
+%    %********** COMMENT IF RUNNING MONTE CARLO
 %    figure()
 %    hold on
-
+%    %*********
     for i = 1: N
         x_e(i) = x(i) + 30*cos(theta_h(i));
         y_e(i) = y(i) + 30*sin(theta_h(i));
@@ -56,9 +61,12 @@ for sim = 1:sims
         phi(i) = plus_minus * normrnd(mu_d2l,s_d2l) * acos(8/18); 
         xt(i) = x_e(i) + 18*cos(theta_h(i)+phi(i));
         yt(i) = y_e(i) + 18*sin(theta_h(i)+phi(i));
-
+        
+%         % ********************
 %         plot([x(i),x_e(i)],[y(i),y_e(i)],'k');
 %         plot([x_e(i),xt(i)],[y_e(i),yt(i)],'r+:');
+%         % ********************
+        
         if i ~=N
             x(i+1) = xt(i);
             y(i+1) = yt(i);
@@ -70,9 +78,59 @@ for sim = 1:sims
     end
     x_range(sim) = max(x)-min(x);
     y_range(sim) = max(y)-min(y);
+    
+
+    % -------------------
+    % Code below is used to test if a "cross-over" has occurred,
+    % and count the instances of cross-overs
+    %--------------------
+    s = 1;
+    for i = 1 : N
+        X(s) = x(i);
+        X(s+1) = x_e(i);
+        Y(s) = y(i);
+        Y(s+1) = y_e(i);
+        s=s+2;
+    end
+    X(37) = xt(18);
+    Y(37) = yt(18);
+    
+    count=0;
+    for s = 1:length(X)-3
+        x1 = X(s);
+        y1 = Y(s);
+        x2 = X(s+1);
+        y2 = Y(s+1);
+        for n = s+2: length(X)-1
+            x3 = X(n);
+            y3 = Y(n);
+            x4 = X(n+1);
+            y4 = Y(n+1);
+            c = crossovers(x1,y1,x2,y2,x3,y3,x4,y4);
+            count = count + c;
+        end
+    end
+    
+    crossings(sim)=count;
+    if crossings(sim)>100
+        dX(m,:)=X;
+        dY(m,:)=Y;
+        dtheta(m,:)=theta_h;
+        dphi(m,:)=phi;
+        CROSSINGCHECK(m) = crossings(sim);
+        m=m+1;
+    end
 end
+
+%------------------------------------
+% Plot the histograms of the "spread" in the nodes in the x and y
+% directions to determine the likelihood that an 18-domain/linker node is
+% stretched or crumpled on itself
+%------------------------------------
+%figure()
+%hist(x_range);
+%figure()
+%hist(y_range);
 figure()
-hist(x_range);
-figure()
-hist(y_range);
+hist(crossings);
 toc
