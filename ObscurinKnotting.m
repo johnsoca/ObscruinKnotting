@@ -18,7 +18,7 @@
 %           angle between the linker to the next domain
 % N - number of nodes which include a domain and a linker
 
-sims=10000;
+sims=1000000;
 x_range = zeros(1,sims);
 y_range = zeros(1,sims);
 crossings = zeros(1,sims);
@@ -112,14 +112,14 @@ for sim = 1:sims
     end
     
     crossings(sim)=count;
-    if crossings(sim)>100
-        dX(m,:)=X;
-        dY(m,:)=Y;
-        dtheta(m,:)=theta_h;
-        dphi(m,:)=phi;
-        CROSSINGCHECK(m) = crossings(sim);
-        m=m+1;
-    end
+%     if crossings(sim)>100
+%         dX(m,:)=X;
+%         dY(m,:)=Y;
+%         dtheta(m,:)=theta_h;
+%         dphi(m,:)=phi;
+%         CROSSINGCHECK(m) = crossings(sim);
+%         m=m+1;
+%     end
 end
 
 %------------------------------------
@@ -133,4 +133,6 @@ end
 %hist(y_range);
 figure()
 hist(crossings);
+figure()
+hist(crossings/N);
 toc
