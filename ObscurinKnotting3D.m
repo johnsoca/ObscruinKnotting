@@ -15,7 +15,8 @@
 % x - x position of the tip of the domain
 % y - y position of the tip of the domain node
 % z - z position of the tip of the domain node
-% theta - 
+% theta - angle between the linker and the following domain: randomly
+%       generated bimodal distribution
 % x_e, y_e, z_e - x, y and z coordinates of the end of the domain node, also the start of
 %            the linker- domain is between 32-34 Angstroms in length
 % xt, yt, zt - x, y and z coordinates of the end of the linker- linker is 12.8 angstroms
@@ -42,7 +43,7 @@ s_l2d = deg2rad([13.2,9.44]); %sigma of linker to domain bimodal distribution
 % Initialize other variables
 l_l = 12.8;
 l_d = 33;
-N = 18; %number of IG domain-linker pairs, i.e. one node
+N = 2; % 18; %number of IG domain-linker pairs, i.e. one node
 
 
 %-- MONTE CARLO--
@@ -77,19 +78,37 @@ N = 18; %number of IG domain-linker pairs, i.e. one node
     z_e(1)=z(1)+l_d*cos(gamma);
     phi(1) = plus_minus * normrnd(mu_d2l,s_d2l) * acos(8/l_l); %****** where's the 8 from?!************
      
-    tau=plus_mins*rand()*pi; % random each time called
+    tau=plus_minus*rand()*pi; % random each time called
     zt(1)=l_d*cos(tau)+z_e(1);
-    [xt(1),yt(1)]=multipleEqnSolver(l_d,l_l,phi(1), x(1), x_e(1), y(1), y_e(1), z(1), z_e(1);
+    [xt(1),yt(1)]=multipleEqnSolver(l_d,l_l,phi(1), x(1), x_e(1), y(1), y_e(1), z(1), z_e(1),zt(1));
     
     %update the beginning of the next domain such that it's the same as the
     %termination of the linker (xt,yt,zt)
-    
-    x(2) = xt(1);
-    y(2) = yt(1);
-    z(2) = zt(1);
 % maybe the beginning of the loop?
-    theta(2) 
+    i=1; %******
+    if i ~=N
+        x(i+1) = xt(i);
+        y(i+1) = yt(i);
+        z(i+1) = zt(i);
+        bimodal = round(rand()+1); % 50% probability of choosing bimodal distribution index 1 as 2
+        alpha = plus_minus*normrnd(mu_l2d(bimodal),s_l2d(bimodal)); 
+        beta = acos((x(i+1)-x_e(i))/l_d); % angle of the tail linker wrt the x axis %********* check l_d vsus l_l?********
+        theta(i+1) = pi-(beta+alpha);
+    end
+    tau=plus_minus *rand()*pi;
+    z_e(2)=l_d*cos(tau)+z(2);
+    [x_e(2),y_e(2)]=multipleEqnSolver(l_l,l_d,theta(2),x_e(1),x(2), y_e(1), y(2), z_e(1),z(2),z_e(2)); %NOTE switch l_l and l_d because of the vector in question the magnitude changes
     
+    phi(2) = plus_minus * normrnd(mu_d2l,s_d2l) * acos(8/l_l);
+    tau=plus_minus*rand()*pi; % random each time called
+    zt(2)=l_d*cos(tau)+z_e(1);
+    [xt(2),yt(2)]=multipleEqnSolver(l_d,l_l,phi(2), x(2), x_e(2), y(2), y_e(2), z(2), z_e(2),zt(2));
+
+% Troubleshooting    
+for i=1:N    
+    plot([x(i),x_e(i)],[y(i),y_e(i)],[z(i),z_e(i)],'k');
+    plot([x_e(i),xt(i)],[y_e(i),yt(i)],[z_e(i),zt(i)],'r+:');
+end
     
     
     
