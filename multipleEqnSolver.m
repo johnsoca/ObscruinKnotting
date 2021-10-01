@@ -1,4 +1,4 @@
-function [x,y]=multipleEqnSolver(n, l, theta, x1, x2, y1, y2, z1, z2)
+function [x,y]=multipleEqnSolver(n, l, theta, x1, x2, y1, y2, z1, z2, z3)
 % the purpose of this function is to solve 2 equations and 2 unknowns from
 % previously identified vector magnitude and vector dot product. See notes
 % for details about how the following variables were declared and used to
