@@ -58,12 +58,16 @@ N = 18; %number of IG domain-linker pairs, i.e. one node
     xt = zeros(1,N);
     yt = zeros(1,N);
     zt = zeros(1,N);
+    theta = zeros(1,N);
+    phi = zeros(1,N);
 
 
     % Initialize the first position and angle of the first domain of node 1
     x(1) = rand();
     y(1) = rand();
     z(1) = rand();
+    % **** could define this in terms of theta(1), but for now leaving alone
+    % because it doesn't work in my head ************************
     alpha = plus_minus * rand()*pi; % for 3D space, need to randomly declare alpha as angle between the first domain and x-axis
     beta = plus_minus * rand()*pi; % for 3D space, need to randomly declare beta as angle between the first domain and y-axis
     gamma = plus_minus * rand()*pi; % for 3D space, need to randomly declare gamma as angle between the first domain and z-axis
@@ -71,7 +75,28 @@ N = 18; %number of IG domain-linker pairs, i.e. one node
     x_e(1)=x(1)+l_d*cos(alpha);
     y_e(1)=y(1)+l_d*cos(beta);
     z_e(1)=z(1)+l_d*cos(gamma);
-    
+    phi(1) = plus_minus * normrnd(mu_d2l,s_d2l) * acos(8/l_l); %****** where's the 8 from?!************
+     
     tau=plus_mins*rand()*pi; % random each time called
     zt(1)=l_d*cos(tau)+z_e(1);
-    [yt(1),xt(1)]=multipleEqnSolver(
+    [xt(1),yt(1)]=multipleEqnSolver(l_d,l_l,phi(1), x(1), x_e(1), y(1), y_e(1), z(1), z_e(1);
+    
+    %update the beginning of the next domain such that it's the same as the
+    %termination of the linker (xt,yt,zt)
+    
+    x(2) = xt(1);
+    y(2) = yt(1);
+    z(2) = zt(1);
+% maybe the beginning of the loop?
+    theta(2) 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
