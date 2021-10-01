@@ -61,6 +61,7 @@ N = 2; % 18; %number of IG domain-linker pairs, i.e. one node
     zt = zeros(1,N);
     theta = zeros(1,N);
     phi = zeros(1,N);
+    tau=zeros(1,2*N);
 
 
     % Initialize the first position and angle of the first domain of node 1
@@ -76,10 +77,10 @@ N = 2; % 18; %number of IG domain-linker pairs, i.e. one node
     x_e(1)=x(1)+l_d*cos(alpha);
     y_e(1)=y(1)+l_d*cos(beta);
     z_e(1)=z(1)+l_d*cos(gamma);
-    phi(1) = plus_minus * normrnd(mu_d2l,s_d2l) * acos(8/l_l); %****** where's the 8 from?!************
+    phi(1) = plus_minus * normrnd(mu_d2l,s_d2l);
      
-    tau=plus_minus*rand()*pi; % random each time called
-    zt(1)=l_d*cos(tau)+z_e(1);
+    tau(1)=plus_minus*rand()*pi; % random each time called
+    zt(1)=l_d*cos(tau(1))+z_e(1);
     [xt(1),yt(1)]=multipleEqnSolver(l_d,l_l,phi(1), x(1), x_e(1), y(1), y_e(1), z(1), z_e(1),zt(1));
     
     %update the beginning of the next domain such that it's the same as the
@@ -91,23 +92,22 @@ N = 2; % 18; %number of IG domain-linker pairs, i.e. one node
         y(i+1) = yt(i);
         z(i+1) = zt(i);
         bimodal = round(rand()+1); % 50% probability of choosing bimodal distribution index 1 as 2
-        alpha = plus_minus*normrnd(mu_l2d(bimodal),s_l2d(bimodal)); 
-        beta = acos((x(i+1)-x_e(i))/l_d); % angle of the tail linker wrt the x axis %********* check l_d vsus l_l?********
-        theta(i+1) = pi-(beta+alpha);
+        theta(i+1) = plus_minus*normrnd(mu_l2d(bimodal),s_l2d(bimodal)); 
     end
-    tau=plus_minus *rand()*pi;
-    z_e(2)=l_d*cos(tau)+z(2);
+    tau(2)=plus_minus *rand()*pi;
+    z_e(2)=l_d*cos(tau(2))+z(2);
     [x_e(2),y_e(2)]=multipleEqnSolver(l_l,l_d,theta(2),x_e(1),x(2), y_e(1), y(2), z_e(1),z(2),z_e(2)); %NOTE switch l_l and l_d because of the vector in question the magnitude changes
     
-    phi(2) = plus_minus * normrnd(mu_d2l,s_d2l) * acos(8/l_l);
-    tau=plus_minus*rand()*pi; % random each time called
-    zt(2)=l_d*cos(tau)+z_e(1);
+    phi(2) = plus_minus * normrnd(mu_d2l,s_d2l);
+    tau(3)=plus_minus*rand()*pi; % random each time called
+    zt(2)=l_d*cos(tau(3))+z_e(1);
     [xt(2),yt(2)]=multipleEqnSolver(l_d,l_l,phi(2), x(2), x_e(2), y(2), y_e(2), z(2), z_e(2),zt(2));
 
-% Troubleshooting    
+% Troubleshooting 
 for i=1:N    
-    plot([x(i),x_e(i)],[y(i),y_e(i)],[z(i),z_e(i)],'k');
-    plot([x_e(i),xt(i)],[y_e(i),yt(i)],[z_e(i),zt(i)],'r+:');
+    plot3([x(i),x_e(i)],[y(i),y_e(i)],[z(i),z_e(i)],'k');
+    hold on
+    plot3([x_e(i),xt(i)],[y_e(i),yt(i)],[z_e(i),zt(i)],'r+:');
 end
     
     

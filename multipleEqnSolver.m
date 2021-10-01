@@ -6,7 +6,7 @@ function [x,y]=multipleEqnSolver(n, l, theta, x1, x2, y1, y2, z1, z2, z3)
 
 A = (n*l*cos(theta) -(z2-z1)*(z3-z2)+y2*(y2-y1))/(x2-x1)+x2;
 B=-(y2-y1)/(x2-x1);
-C=l^2-(x3-x2)^2;
+C=l^2-(z3-z2)^2;
 D= -(C-A^2+2*A*x2-x2^2-y2^2);
 E=2*A*B-2*x2*B-2*y2;
 F=B^2-1;
