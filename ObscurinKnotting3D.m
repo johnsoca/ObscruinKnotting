@@ -83,8 +83,9 @@ end
 
     phi(1) = plus_minus * normrnd(mu_d2l,s_d2l);
     tau(2)=plus_minus*rand()*pi; % random each time called
-    zt(1)=l_l*cos(tau(1))+z_e(1);
-    [xt(1),yt(1)]=multipleEqnSolver(l_d,l_l,phi(1), x(1), x_e(1), y(1), y_e(1), z(1), z_e(1),zt(1));
+    xt(1)=x_e(1)+l_l*cos(phi(1))*sin(tau(2));
+    yt(1)=y_e(1)+l_l*sin(phi(1))*sin(tau(2));
+    zt(1)=z_e(1)+l_l*cos(tau(2));
     
 %###############CHECK#####################
 if abs((sqrt((xt(1)-x_e(1))^2+(yt(1)-y_e(1))^2+(zt(1)-z_e(1))^2))-l_l)>0.01 %defined tolerance of "equal"
@@ -103,9 +104,11 @@ end
         bimodal = round(rand()+1); % 50% probability of choosing bimodal distribution index 1 as 2
         theta(i+1) = plus_minus*normrnd(mu_l2d(bimodal),s_l2d(bimodal)); 
     end
-    tau(3)=plus_minus *rand()*pi;
-    z_e(2)=l_d*cos(tau(2))+z(2);
-    [x_e(2),y_e(2)]=multipleEqnSolver(l_l,l_d,theta(2),x_e(1),x(2), y_e(1), y(2), z_e(1),z(2),z_e(2)); %NOTE switch l_l and l_d because of the vector in question the magnitude changes
+    tau(3)=plus_minus*rand()*pi;
+    x_e(2)=x(2)+l_d*cos(theta(2))*sin(tau(3));
+    y_e(2)=y(2)+l_d*sin(theta(2))*sin(tau(3));
+    z_e(2)=z(2)+l_d*cos(tau(3));
+   
 %###############CHECK#####################
 if abs((sqrt((x_e(2)-x(2))^2+(y_e(2)-y(2))^2+(z_e(2)-z(2))^2))-l_d)>0.01 %defined tolerance of "equal"
     disp("second node is not within tolerance of the length of the Ig doman (l_d)");
@@ -113,8 +116,9 @@ end
 %#########################################    
     phi(2) = plus_minus * normrnd(mu_d2l,s_d2l);
     tau(4)=plus_minus*rand()*pi; % random each time called
-    zt(2)=l_d*cos(tau(3))+z_e(1);
-    [xt(2),yt(2)]=multipleEqnSolver(l_d,l_l,phi(2), x(2), x_e(2), y(2), y_e(2), z(2), z_e(2),zt(2));
+    xt(2)=x_e(2)+l_l*cos(phi(2))*sin(tau(4));
+    yt(2)=y_e(2)+l_l*sin(phi(2))*sin(tau(4));
+    zt(2)=z_e(2)+l_l*cos(tau(4));
 %###############CHECK#####################
 if abs((sqrt((xt(2)-x_e(2))^2+(yt(2)-y_e(2))^2+(zt(2)-z_e(2))^2))-l_l)>0.01 %defined tolerance of "equal"
     disp("second linker is not within tolerance of the length of the linker doman (l_d)");
