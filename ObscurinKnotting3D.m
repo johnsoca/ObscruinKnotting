@@ -15,13 +15,11 @@
 % x - x position of the tip of the domain
 % y - y position of the tip of the domain node
 % z - z position of the tip of the domain node
-% theta - angle between the linker and the following domain: randomly
-%       generated bimodal distribution
 % x_e, y_e, z_e - x, y and z coordinates of the end of the domain node, also the start of
 %            the linker- domain is between 32-34 Angstroms in length
 % xt, yt, zt - x, y and z coordinates of the end of the linker- linker is 12.8 angstroms
 %          in length
-% alpha - randomly generated according to a bi-modal normal distribution
+% theta - randomly generated according to a bi-modal normal distribution
 %           with mu=93.3 and sigma=13.2, and mu=58.4 and sigma=9.44 (degrees) as the
 %           angle between the linker to the next domain
 % N - number of nodes which include a domain and a linker
@@ -68,21 +66,32 @@ N = 2; % 18; %number of IG domain-linker pairs, i.e. one node
     x(1) = rand();
     y(1) = rand();
     z(1) = rand();
-    % **** could define this in terms of theta(1), but for now leaving alone
-    % because it doesn't work in my head ************************
-    alpha = plus_minus * rand()*pi; % for 3D space, need to randomly declare alpha as angle between the first domain and x-axis
-    beta = plus_minus * rand()*pi; % for 3D space, need to randomly declare beta as angle between the first domain and y-axis
-    gamma = plus_minus * rand()*pi; % for 3D space, need to randomly declare gamma as angle between the first domain and z-axis
-    
-    x_e(1)=x(1)+l_d*cos(alpha);
-    y_e(1)=y(1)+l_d*cos(beta);
-    z_e(1)=z(1)+l_d*cos(gamma);
-    phi(1) = plus_minus * normrnd(mu_d2l,s_d2l);
-     
+    bimodal = round(rand()+1); % 50% probability of choosing bimodal distribution index 1 as 2
+    theta(1) = plus_minus*normrnd(mu_l2d(bimodal),s_l2d(bimodal));
+    %use spherical coordinate system where tau is the inclination and theta
+    %is the azimuth, and the magnitude is the radius
     tau(1)=plus_minus*rand()*pi; % random each time called
-    zt(1)=l_d*cos(tau(1))+z_e(1);
+    x_e(1)=x(1)+l_d*cos(theta(1))*sin(tau(1));
+    y_e(1)=y(1)+l_d*sin(theta(1))*sin(tau(1));
+    z_e(1)=z(1)+l_d*cos(tau(1));
+     
+%###############CHECK#####################
+if abs((sqrt((x_e(1)-x(1))^2+(y_e(1)-y(1))^2+(z_e(1)-z(1))^2))-l_d)>0.01 %defined tolerance of "equal"
+    disp("first node is not within tolerance of the length of the Ig doman (l_d)");
+end
+%#########################################
+
+    phi(1) = plus_minus * normrnd(mu_d2l,s_d2l);
+    tau(2)=plus_minus*rand()*pi; % random each time called
+    zt(1)=l_l*cos(tau(1))+z_e(1);
     [xt(1),yt(1)]=multipleEqnSolver(l_d,l_l,phi(1), x(1), x_e(1), y(1), y_e(1), z(1), z_e(1),zt(1));
     
+%###############CHECK#####################
+if abs((sqrt((xt(1)-x_e(1))^2+(yt(1)-y_e(1))^2+(zt(1)-z_e(1))^2))-l_l)>0.01 %defined tolerance of "equal"
+    disp("first linker is not within tolerance of the length of the linker doman (l_d)");
+end
+%#########################################  
+
     %update the beginning of the next domain such that it's the same as the
     %termination of the linker (xt,yt,zt)
 % maybe the beginning of the loop?
@@ -94,15 +103,23 @@ N = 2; % 18; %number of IG domain-linker pairs, i.e. one node
         bimodal = round(rand()+1); % 50% probability of choosing bimodal distribution index 1 as 2
         theta(i+1) = plus_minus*normrnd(mu_l2d(bimodal),s_l2d(bimodal)); 
     end
-    tau(2)=plus_minus *rand()*pi;
+    tau(3)=plus_minus *rand()*pi;
     z_e(2)=l_d*cos(tau(2))+z(2);
     [x_e(2),y_e(2)]=multipleEqnSolver(l_l,l_d,theta(2),x_e(1),x(2), y_e(1), y(2), z_e(1),z(2),z_e(2)); %NOTE switch l_l and l_d because of the vector in question the magnitude changes
-    
+%###############CHECK#####################
+if abs((sqrt((x_e(2)-x(2))^2+(y_e(2)-y(2))^2+(z_e(2)-z(2))^2))-l_d)>0.01 %defined tolerance of "equal"
+    disp("second node is not within tolerance of the length of the Ig doman (l_d)");
+end
+%#########################################    
     phi(2) = plus_minus * normrnd(mu_d2l,s_d2l);
-    tau(3)=plus_minus*rand()*pi; % random each time called
+    tau(4)=plus_minus*rand()*pi; % random each time called
     zt(2)=l_d*cos(tau(3))+z_e(1);
     [xt(2),yt(2)]=multipleEqnSolver(l_d,l_l,phi(2), x(2), x_e(2), y(2), y_e(2), z(2), z_e(2),zt(2));
-
+%###############CHECK#####################
+if abs((sqrt((xt(2)-x_e(2))^2+(yt(2)-y_e(2))^2+(zt(2)-z_e(2))^2))-l_l)>0.01 %defined tolerance of "equal"
+    disp("second linker is not within tolerance of the length of the linker doman (l_d)");
+end
+%######################################### 
 % Troubleshooting 
 for i=1:N    
     plot3([x(i),x_e(i)],[y(i),y_e(i)],[z(i),z_e(i)],'k');
