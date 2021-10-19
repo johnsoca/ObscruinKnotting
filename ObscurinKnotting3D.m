@@ -29,7 +29,7 @@
 %   from the angle between the vector and the z-axis.
 
 %--MONTE CARLO--
-sims=100000;
+sims=1000000;
 %---------------
 
 % Angle distribution values
