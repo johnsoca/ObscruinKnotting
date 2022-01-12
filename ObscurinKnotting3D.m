@@ -145,6 +145,8 @@ for sim = 1:sims
 %         hold on
 %         plot3([x_e(i),xt(i)],[y_e(i),yt(i)],[z_e(i),zt(i)],'r+:');
 %     end
+
+    % Add code to count the number of cross overs in 3D
     
 end
 toc
