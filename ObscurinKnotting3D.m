@@ -29,7 +29,7 @@
 %   from the angle between the vector and the z-axis.
 
 %--MONTE CARLO--
-sims=1000000;
+sims=1;
 %---------------
 
 % Angle distribution values
@@ -148,32 +148,25 @@ for sim = 1:sims
 %     end
 
     % Add code to count the number of cross overs in 3D
-    % Referencing https://math.stackexchange.com/questions/3114665/how-to-find-if-two-line-segments-intersect-in-3d
-    % Using the equation of a line between points A and B (tA+(1-t)B) where
-    % 0 <=t<=1, and the equation of a line between points C and D
-    % (sC+(1-s)D) for 0<=s<=1, in 3D these are 3 equations and 2 unknowns.
-    % Solve the first two equations (linear algebra with an inverse
-    % matrix), then check the solutions for t and s to see if the third
-    % equation is true. If the third equation is true, then the line
-    % segments intersect.
+    % 
     count=0;
     % I'm going to iterate through the linkers such that linker 1 is
     % compared to linkers 3-18 for determining cross overs (there's no way
-    % linkers next to each other with indices can cross over). All points A
-    % and C are related to the variables x, y, and z, whereas all points B and D are
-    % related to the variables x_e, y_e, and z_e.
-    for i=1:N-2
-        for j=3:N-2
-            M=[x(i)-x_e(i), x_e(j)-x(j); y(i)-y_e(i), y_e(j)-y(j)];
-            S=[x_e(j)-x_e(i); y_e(j)-y_e(i)];
-            T=inv(M)*S;
-        
-            check_eqn_left=T(1)*(z(i)-z_e(i))+T(2)*(z_e(j)-z(i));
-            check_eqn_right=z_e(j)-z_e(i);
-        
-            if check_eqn_left==check_eqn_right
-                count=count+1;
-            end
+    % linkers next to each other with indices can cross over). To help with
+    % indexing in the nested loop, I'm going to create a new variable to
+    % put the poitns of the linkers end to end.
+    L=zeros(3,N*2);
+    ind=1;
+    for i=1:N
+        L(:,ind)=[x(i); y(i); z(i)];
+        L(:,ind+1)=[x_e(i); y_e(i); z_e(i)];
+        ind=ind+2;
+    end
+    
+    for i=1:(N*2)-3
+        for j=(i+2):(N*2)-1
+            cross = crossovers3D(L(1,i), L(2,i), L(3,i), L(1,i+1), L(2,i+1), L(3,i+1), L(1,j), L(2,j), L(3,j), L(1,j+1),L(2,j+1),L(3,j+1));
+            count=count+cross;
         end
     end
     crossings(sim)=count;
