@@ -48,6 +48,7 @@ tic
 x_range=zeros(1,sims);
 y_range=zeros(1,sims);
 z_range=zeros(1,sims);
+crossings=zeros(1,sims);
 
 %-- MONTE CARLO--
 for sim = 1:sims
@@ -145,6 +146,37 @@ for sim = 1:sims
 %         hold on
 %         plot3([x_e(i),xt(i)],[y_e(i),yt(i)],[z_e(i),zt(i)],'r+:');
 %     end
+
+    % Add code to count the number of cross overs in 3D
+    % Referencing https://math.stackexchange.com/questions/3114665/how-to-find-if-two-line-segments-intersect-in-3d
+    % Using the equation of a line between points A and B (tA+(1-t)B) where
+    % 0 <=t<=1, and the equation of a line between points C and D
+    % (sC+(1-s)D) for 0<=s<=1, in 3D these are 3 equations and 2 unknowns.
+    % Solve the first two equations (linear algebra with an inverse
+    % matrix), then check the solutions for t and s to see if the third
+    % equation is true. If the third equation is true, then the line
+    % segments intersect.
+    count=0;
+    % I'm going to iterate through the linkers such that linker 1 is
+    % compared to linkers 3-18 for determining cross overs (there's no way
+    % linkers next to each other with indices can cross over). All points A
+    % and C are related to the variables x, y, and z, whereas all points B and D are
+    % related to the variables x_e, y_e, and z_e.
+    for i=1:N-2
+        for j=3:N-2
+            M=[x(i)-x_e(i), x_e(j)-x(j); y(i)-y_e(i), y_e(j)-y(j)];
+            S=[x_e(j)-x_e(i); y_e(j)-y_e(i)];
+            T=inv(M)*S;
+        
+            check_eqn_left=T(1)*(z(i)-z_e(i))+T(2)*(z_e(j)-z(i));
+            check_eqn_right=z_e(j)-z_e(i);
+        
+            if check_eqn_left==check_eqn_right
+                count=count+1;
+            end
+        end
+    end
+    crossings(sim)=count;
     
 end
 toc
@@ -154,6 +186,8 @@ figure()
 hist(y_range)
 figure()
 hist(z_range)
+figure()
+hist(crossings)
 
     
     
