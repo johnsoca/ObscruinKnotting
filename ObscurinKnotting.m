@@ -131,8 +131,16 @@ end
 %hist(x_range);
 %figure()
 %hist(y_range);
-figure()
-hist(crossings);
-figure()
-hist(crossings/N);
+% figure()
+% hist(crossings);
+% figure()
+% hist(crossings/N);
 toc
+
+% Save data into txt file
+M=zeros(sims,4);
+M(:,1)=x_range;
+M(:,2)=y_range;
+M(:,3)=crossings;
+M(:,4)=crossings/N;
+csvwrite('MillionSim2D.txt',M); %NOTE! This will overwrite exisiting file
