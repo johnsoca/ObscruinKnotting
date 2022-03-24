@@ -29,7 +29,7 @@
 %   from the angle between the vector and the z-axis.
 
 %--MONTE CARLO--
-sims=1;
+sims=1000000;
 %---------------
 
 % Angle distribution values
@@ -42,6 +42,7 @@ s_l2d = deg2rad([13.2,9.44]); %sigma of linker to domain bimodal distribution
 l_l = 12.8;
 l_d = 33;
 N = 18; %number of IG domain-linker pairs, i.e. one node
+thresDist = l_d/2; %threshold distance for crossings, the radius of the Ig Domain if assumed to be a spherical shape
 
 tic
 %for plotting the range of x, y, and z values
@@ -49,6 +50,7 @@ x_range=zeros(1,sims);
 y_range=zeros(1,sims);
 z_range=zeros(1,sims);
 crossings=zeros(1,sims);
+vShort=zeros(1,3); %returns the vector of the shortest distance between line segments. Probably will never use.
 
 %-- MONTE CARLO--
 for sim = 1:sims
@@ -165,8 +167,11 @@ for sim = 1:sims
     
     for i=1:(N*2)-3
         for j=(i+2):(N*2)-1
-            cross = crossovers3D(L(1,i), L(2,i), L(3,i), L(1,i+1), L(2,i+1), L(3,i+1), L(1,j), L(2,j), L(3,j), L(1,j+1),L(2,j+1),L(3,j+1));
-            count=count+cross;
+            [dist vShort]=DistBetween2Segment(L(:,i), L(:,i+1),L(:,j),L(:,j+1));
+            %cross = crossovers3D(L(1,i), L(2,i), L(3,i), L(1,i+1), L(2,i+1), L(3,i+1), L(1,j), L(2,j), L(3,j), L(1,j+1),L(2,j+1),L(3,j+1));
+            if dist <= thresDist % if linkers and domains are within a specified threshold distance, it counts as a crossing
+                count=count+1;
+            end
         end
     end
     crossings(sim)=count;
@@ -181,6 +186,14 @@ figure()
 hist(z_range)
 figure()
 hist(crossings)
+
+% Save data into txt file
+M=zeros(sims,4);
+M(:,1)=x_range;
+M(:,2)=y_range;
+M(:,3)=z_range;
+M(:,4)=crossings;
+csvwrite('MillionSim3D.txt',M); %NOTE! This will overwrite exisiting file
 
     
     
