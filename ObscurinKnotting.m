@@ -54,16 +54,16 @@ for sim = 1:sims
     tP=eP+13*[cos(phi); sin(phi)];
         
     X(:,2)=[cos(alpha), -sin(alpha); sin(alpha), cos(alpha)]*tP; %coordinates of the end of the tail node, same as start of next head node
-%----------------------------------------------------
-% CHECK: magnitude of X to E is 30, magnitude of E to X(i+1) is 13, angle 
-% between EX and EX(i+1)is phi
-norm(E(:,1)-X(:,1)) %should be close to 30
-norm(X(:,2)-E(:,1)) % should be close to 13
-A=X(:,1)-E(:,1);
-B=X(:,2)-E(:,1);
-pi-acos(dot(A,B)/(norm(A)*norm(B))) %should be close to pi-phi
-phi
-%----------------------------------------------------
+% %----------------------------------------------------
+% % CHECK: magnitude of X to E is 30, magnitude of E to X(i+1) is 13, angle 
+% % between EX and EX(i+1)is phi
+% norm(E(:,1)-X(:,1)) %should be close to 30
+% norm(X(:,2)-E(:,1)) % should be close to 13
+% A=X(:,1)-E(:,1);
+% B=X(:,2)-E(:,1);
+% pi-acos(dot(A,B)/(norm(A)*norm(B))) %should be close to pi-phi
+% phi
+% %----------------------------------------------------
 
 %----------------------------------------------------
     plot([E(1,1),X(1,2)],[E(2,1),X(2,2)],'r');
@@ -72,17 +72,18 @@ phi
     for i=2:N
         % Rotate the coordinate system with respect to the prior segment using
         % transformation/rotation matrix
-        theta=atan((E(2,i-1)-X(2,i))/(E(1,i-1)-X(1,i)));
+        theta=atan(abs(X(2,i)-E(2,i-1))/abs(X(1,i)-E(1,i-1)));
         xP = [cos(theta), sin(theta); -sin(theta), cos(theta)]*X(:,i);
-        
         bimodal = round(rand()+1); % 50% probability of choosing bimodal distribution index 1 as 2
-        alpha=pi/8; %normrnd(mu_l2d(bimodal),s_l2d(bimodal));
+        alpha=plus_minus*normrnd(mu_l2d(bimodal),s_l2d(bimodal));
         eP=xP+30*[cos(alpha); sin(alpha)]; %coordinates of the end of the head node
-        
-        phi = pi/6; %normrnd(mu_d2l,s_d2l);
-        tP=eP+13*[cos(phi); sin(phi)];
-        
         E(:,i)=[cos(theta), -sin(theta); sin(theta), cos(theta)]*eP; % coordinates of the point between the domain and linker
+        
+        % Rotate the coordinate system with respect to the prior segment
+        theta=atan(abs(E(2,i)-X(2,i))/abs(E(1,i)-X(1,i)));
+        eP= [cos(theta), sin(theta); -sin(theta), cos(theta)]*E(:,i);
+        phi = plus_minus*normrnd(mu_d2l,s_d2l);
+        tP=eP+13*[cos(phi); sin(phi)];
         X(:,i+1)=[cos(theta), -sin(theta); sin(theta), cos(theta)]*tP; %coordinates of the end of the tail node, same as start of next head node
 %----------------------------------------------------
     plot([X(1,i),E(1,i)],[X(2,i),E(2,i)],'b');
