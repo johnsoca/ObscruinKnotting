@@ -50,20 +50,20 @@ for sim = 1:sims
     % transformation/rotation matrix
     eP=[cos(alpha), sin(alpha); -sin(alpha), cos(alpha)]*E(:,1);
         
-    phi = normrnd(mu_d2l,s_d2l);
+    phi = plus_minus * pi/6; %normrnd(mu_d2l,s_d2l);
     tP=eP+13*[cos(phi); sin(phi)];
         
     X(:,2)=[cos(alpha), -sin(alpha); sin(alpha), cos(alpha)]*tP; %coordinates of the end of the tail node, same as start of next head node
-% %----------------------------------------------------
-% % CHECK: magnitude of X to E is 30, magnitude of E to X(i+1) is 13, angle 
-% % between EX and EX(i+1)is phi
-% norm(E(:,1)-X(:,1)) %should be close to 30
-% norm(X(:,2)-E(:,1)) % should be close to 13
-% A=X(:,1)-E(:,1);
-% B=X(:,2)-E(:,1);
-% pi-acos(dot(A,B)/(norm(A)*norm(B))) %should be close to pi-phi
-% phi
-% %----------------------------------------------------
+%----------------------------------------------------
+% CHECK: magnitude of X to E is 30, magnitude of E to X(i+1) is 13, angle 
+% between EX and EX(i+1)is phi
+norm(E(:,1)-X(:,1)) %should be close to 30
+norm(X(:,2)-E(:,1)) % should be close to 13
+A=X(:,1)-E(:,1);
+B=X(:,2)-E(:,1);
+pi-acos(dot(A,B)/(norm(A)*norm(B))) %should be close to pi-phi
+phi
+%----------------------------------------------------
 
 %----------------------------------------------------
     plot([E(1,1),X(1,2)],[E(2,1),X(2,2)],'r');
@@ -72,14 +72,14 @@ for sim = 1:sims
     for i=2:N
         % Rotate the coordinate system with respect to the prior segment using
         % transformation/rotation matrix
-        theta=atan(abs(E(2,i-1)-X(2,i))/abs(E(1,i-1)-X(1,i)));
+        theta=atan((E(2,i-1)-X(2,i))/(E(1,i-1)-X(1,i)));
         xP = [cos(theta), sin(theta); -sin(theta), cos(theta)]*X(:,i);
         
         bimodal = round(rand()+1); % 50% probability of choosing bimodal distribution index 1 as 2
-        alpha=normrnd(mu_l2d(bimodal),s_l2d(bimodal));
+        alpha=pi/8; %normrnd(mu_l2d(bimodal),s_l2d(bimodal));
         eP=xP+30*[cos(alpha); sin(alpha)]; %coordinates of the end of the head node
         
-        phi = normrnd(mu_d2l,s_d2l);
+        phi = pi/6; %normrnd(mu_d2l,s_d2l);
         tP=eP+13*[cos(phi); sin(phi)];
         
         E(:,i)=[cos(theta), -sin(theta); sin(theta), cos(theta)]*eP; % coordinates of the point between the domain and linker
@@ -93,16 +93,14 @@ for sim = 1:sims
 % between EX and EX(i+1)is phi, angle between XE(i-1) and XE is alpha
 A=X(:,i)-E(:,i);
 B=X(:,i+1)-E(:,i);
-% norm(A) %should be close to 30
-% norm(B) % should be close to 13
-pi-acos(dot(A,B)/(norm(A)*norm(B))) %should be close to phi
+norm(A) %should be close to 30
+norm(B) % should be close to 13
+phi_test = pi-acos(dot(A,B)/(norm(A)*norm(B))) %should be close to phi
 phi
 
 C=E(:,i-1)-X(:,i);
 D=E(:,i)-X(:,i);
-% norm(C) % should be close to 13
-% norm(D) % should be close to 30
-pi-acos(dot(C,D)/(norm(C)*norm(D))) %should be close to alpha
+alpha_test = pi-acos(dot(C,D)/(norm(C)*norm(D))) %should be close to alpha
 alpha
 %----------------------------------------------------
     end
