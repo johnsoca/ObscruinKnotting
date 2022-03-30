@@ -50,7 +50,8 @@ for sim = 1:sims
     % transformation/rotation matrix
     eP=[cos(alpha), sin(alpha); -sin(alpha), cos(alpha)]*E(:,1);
         
-    phi = plus_minus*normrnd(mu_d2l,s_d2l);
+    phi = plus_minus * normrnd(mu_d2l,s_d2l);
+    phi = scaling(phi);
     tP=eP+13*[cos(phi); sin(phi)];
         
     X(:,2)=[cos(alpha), -sin(alpha); sin(alpha), cos(alpha)]*tP; %coordinates of the end of the tail node, same as start of next head node
