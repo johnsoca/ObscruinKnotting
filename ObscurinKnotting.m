@@ -25,6 +25,8 @@ s_d2l = deg2rad(18.5); %sigma of domain to linker
 mu_l2d = deg2rad([93.3,58.4]); %mu of linker to domain bimodal distribution
 s_l2d = deg2rad([13.2,9.44]); %sigma of linker to domain bimodal distribution
 
+R=33/4; % set radius of circle to search for clusters as 33 Angstroms.
+pt_num=5; % number of points within a circle of radius R to qualify as a cluster
 tic
 m=1;
 for sim = 1:sims
@@ -126,6 +128,7 @@ for sim = 1:sims
         ind=ind+2;
     end
     
+    % COUNT the number of crossings
     for i=1:(N*2)-3
         for j=(i+2):(N*2)-1
             [dist vShort]=DistBetween2Segment(L(:,i), L(:,i+1),L(:,j),L(:,j+1));
@@ -135,6 +138,23 @@ for sim = 1:sims
         end
     end
     crossings(sim)=count;
+    
+    % COUNT the number of clusters, i.e. tangles
+    D=zeros(1,N*2);
+    P=[1:1:N*2];
+    numCluster=0;
+    for i=1:N*2
+        if P(i) ~=0
+            D=sqrt((L(1,P(i))-L(1,:)).^2+(L(2,P(i))-L(2,:)).^2+(L(3,P(i))-L(3,:)).^2);
+            cluster=logical(D<=R);
+            clusterSize=nnz(cluster);
+            if clusterSize >= pt_num
+                numCluster=numCluster+1;
+                ind=find(cluster); % indices of points within the cluster
+                P(ind)=0;
+            end
+        end
+    end
 
 end
 
