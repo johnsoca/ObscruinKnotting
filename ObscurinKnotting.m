@@ -26,7 +26,7 @@ mu_l2d = deg2rad([93.3,58.4]); %mu of linker to domain bimodal distribution
 s_l2d = deg2rad([13.2,9.44]); %sigma of linker to domain bimodal distribution
 
 R=33/2; % set radius of circle to search for clusters as 33 Angstroms.
-pt_num=6; % number of points within a circle of radius R to qualify as a cluster
+pt_num=4; % number of points within a circle of radius R to qualify as a cluster
 tic
 m=1;
 for sim = 1:sims
@@ -143,6 +143,7 @@ for sim = 1:sims
     D=zeros(1,N*2);
     P=[1:1:N*2];
     numCluster(sim)=0;
+    C={'k','g','m','b','r','c',[0.5 0.6 0.7],[0.8 0.2 0.6],'k','g','m','b','r','c',[0.5 0.6 0.7], [0.8 0.2 0.6]};
     for i=1:N*2
         if P(i) ~=0
             D=sqrt((L(1,P(i))-L(1,:)).^2+(L(2,P(i))-L(2,:)).^2+(L(3,P(i))-L(3,:)).^2);
@@ -154,7 +155,7 @@ for sim = 1:sims
                 numCluster(sim)=numCluster(sim)+1;
                 ind=find(cluster); % indices of points within the cluster
                 for j=1:length(ind)
-                    plot(L(1,P(ind(j))),L(2,P(ind(j))),'k*');
+                    plot(L(1,P(ind(j))),L(2,P(ind(j))),'color',C{numCluster},'marker','*');
                 end
                 P(ind)=0;
             end
