@@ -14,7 +14,7 @@
 %           angle between the linker to the next domain
 % N - number of nodes which include a domain and a linker
 
-sims=1;
+sims=10;
 x_range = zeros(1,sims);
 y_range = zeros(1,sims);
 crossings = zeros(1,sims);
@@ -26,7 +26,8 @@ mu_l2d = deg2rad([93.3,58.4]); %mu of linker to domain bimodal distribution
 s_l2d = deg2rad([13.2,9.44]); %sigma of linker to domain bimodal distribution
 
 R=33/2; % set radius of circle to search for clusters as 33 Angstroms.
-pt_num=4; % number of points within a circle of radius R to qualify as a cluster
+pt_num4=4; % number of points within a circle of radius R to qualify as a cluster
+pt_num5=5;
 tic
 m=1;
 for sim = 1:sims
@@ -45,11 +46,11 @@ for sim = 1:sims
 
     E(1:2,1)=X(1:2,1)+30*[cos(alpha); sin(alpha)]; %coordinates of the end of the head node
     
-%----------------------------------------------------
-    figure() %comment out if running monte carlo sims
-    plot([X(1,1),E(1,1)],[X(2,1),E(2,1)],'b');
-    hold on
-%----------------------------------------------------
+% %----------------------------------------------------
+%     figure() %comment out if running monte carlo sims
+%     plot([X(1,1),E(1,1)],[X(2,1),E(2,1)],'b');
+%     hold on
+% %----------------------------------------------------
 
     % Rotate the coordinate system with respect to alpha using
     % transformation/rotation matrix
@@ -71,9 +72,9 @@ for sim = 1:sims
 % phi
 % %----------------------------------------------------
 
-%----------------------------------------------------
-    plot([E(1,1),X(1,2)],[E(2,1),X(2,2)],'r');
-%----------------------------------------------------
+% %----------------------------------------------------
+%     plot([E(1,1),X(1,2)],[E(2,1),X(2,2)],'r');
+% %----------------------------------------------------
 
     for i=2:N
         % Rotate the coordinate system with respect to the prior segment using
@@ -91,10 +92,10 @@ for sim = 1:sims
         phi = scaling(plus_minus*normrnd(mu_d2l,s_d2l));
         tP=eP+13*[cos(phi); sin(phi)];
         X(1:2,i+1)=[cos(theta), -sin(theta); sin(theta), cos(theta)]*tP; %coordinates of the end of the tail node, same as start of next head node
-%----------------------------------------------------
-    plot([X(1,i),E(1,i)],[X(2,i),E(2,i)],'b');
-    plot([E(1,i),X(1,i+1)],[E(2,i),X(2,i+1)],'r');
-%----------------------------------------------------
+% %----------------------------------------------------
+%     plot([X(1,i),E(1,i)],[X(2,i),E(2,i)],'b');
+%     plot([E(1,i),X(1,i+1)],[E(2,i),X(2,i+1)],'r');
+% %----------------------------------------------------
 % %----------------------------------------------------
 % % CHECK: magnitude of X to E is 30, magnitude of E to X(i+1) is 13, angle 
 % % between EX and EX(i+1)is phi, angle between XE(i-1) and XE is alpha
@@ -142,8 +143,9 @@ for sim = 1:sims
     % COUNT the number of clusters, i.e. tangles
     D=zeros(1,N*2);
     P=[1:1:N*2];
-    numCluster(sim)=0;
-    C={'k','g','m','b','r','c',[0.5 0.6 0.7],[0.8 0.2 0.6],'k','g','m','b','r','c',[0.5 0.6 0.7], [0.8 0.2 0.6]};
+    num4Cluster(sim)=0;
+    num5Cluster(sim)=0;
+%     C={'k','g','m','b','r','c',[0.5 0.6 0.7],[0.8 0.2 0.6],'k','g','m','b','r','c',[0.5 0.6 0.7], [0.8 0.2 0.6]};
     for i=1:N*2
         if P(i) ~=0
             D=sqrt((L(1,P(i))-L(1,:)).^2+(L(2,P(i))-L(2,:)).^2+(L(3,P(i))-L(3,:)).^2);
@@ -151,17 +153,24 @@ for sim = 1:sims
             threshold=logical(D<=R);
             cluster=logical(repeat+threshold==2);
             clusterSize=nnz(cluster);
-            if clusterSize >= pt_num
-                numCluster(sim)=numCluster(sim)+1;
+            if clusterSize >= pt_num4
+                num4Cluster(sim)=num4Cluster(sim)+1;
                 ind=find(cluster); % indices of points within the cluster
-                for j=1:length(ind)
-                    plot(L(1,P(ind(j))),L(2,P(ind(j))),'color',C{numCluster},'marker','*');
-                end
+%                 for j=1:length(ind)
+%                     plot(L(1,P(ind(j))),L(2,P(ind(j))),'color',C{numCluster},'marker','*');
+%                 end
+                P(ind)=0;
+            end
+            if clusterSize >= pt_num5
+                num5Cluster(sim)=num5Cluster(sim)+1;
+                ind=find(cluster); % indices of points within the cluster
+%                 for j=1:length(ind)
+%                     plot(L(1,P(ind(j))),L(2,P(ind(j))),'color',C{numCluster},'marker','*');
+%                 end
                 P(ind)=0;
             end
         end
     end
-
 end
 
 %------------------------------------
@@ -169,32 +178,28 @@ end
 % directions to determine the likelihood that an 18-domain/linker node is
 % stretched or crumpled on itself
 %------------------------------------
-% <<<<<<< master
-% % figure()
-% % hist(x_range);
-% % figure()
-% % hist(y_range);
-% % % % % figure()
-% % % % % hist(crossings);
+figure()
+hist(x_range);
+figure()
+hist(y_range);
+figure()
+hist(crossings);
+figure()
+hist(num4Cluster);
+figure()
+hist(num5Cluster);
 % % % % % figure()
 % % % % % hist(crossings/N);
-% % % % % toc
-% =======
-% %figure()
-% %hist(x_range);
-% %figure()
-% %hist(y_range);
-% % figure()
-% % hist(crossings);
-% % figure()
-% % hist(crossings/N);
-% toc
+toc
 
-% % Save data into txt file
-% M=zeros(sims,4);
-% M(:,1)=x_range;
-% M(:,2)=y_range;
-% M(:,3)=crossings;
-% M(:,4)=crossings/N;
-% csvwrite('MillionSim2D.txt',M); %NOTE! This will overwrite exisiting file
-% >>>>>>> main
+
+% Save data into txt file
+% % M=zeros(sims,6);
+% % M(:,1)=x_range;
+% % M(:,2)=y_range;
+% % M(:,3)=crossings;
+% % M(:,4)=crossings/N;
+% % M(:,5)=num4Cluster;
+% % M(:,6)=num5Cluster;
+% % csvwrite('MillionSim2D.txt',M); %NOTE! This will overwrite exisiting file
+
