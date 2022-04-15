@@ -12,24 +12,17 @@
 % Variables:
 % phi- angle between the domain and the following linker: randomly generated according to normal
 %       distribution mu=126, sigma=18.5 degrees
-% x - x position of the tip of the domain
-% y - y position of the tip of the domain node
-% z - z position of the tip of the domain node
-% x_e, y_e, z_e - x, y and z coordinates of the end of the domain node, also the start of
-%            the linker- domain is between 32-34 Angstroms in length
-% xt, yt, zt - x, y and z coordinates of the end of the linker- linker is 12.8 angstroms
-%          in length
-% theta - randomly generated according to a bi-modal normal distribution
+% X - x & y position of the tip of the domain
+% E - x and y coordinates of the end of the domain, also the start of
+%            the linker- domain is 30 Angstroms in length
+% alpha - randomly generated according to a bi-modal normal distribution
 %           with mu=93.3 and sigma=13.2, and mu=58.4 and sigma=9.44 (degrees) as the
 %           angle between the linker to the next domain
 % N - number of nodes which include a domain and a linker
-% l_l - length of linker, 12.8 Angstroms
-% l_d - length of domain, between 32-34 Angstroms, *** choose to be 33 ***
-% tau - random with each call, determines the degree of "twist" as defined
-%   from the angle between the vector and the z-axis.
+
 
 %--MONTE CARLO--
-sims=1000000;
+sims=1;
 %---------------
 
 % Angle distribution values
@@ -39,7 +32,7 @@ mu_l2d = deg2rad([93.3,58.4]); %mu of linker to domain bimodal distribution
 s_l2d = deg2rad([13.2,9.44]); %sigma of linker to domain bimodal distribution
 
 % Initialize other variables
-l_l = 12.8;
+l_l = 13;
 l_d = 33;
 N = 18; %number of IG domain-linker pairs, i.e. one node
 thresDist = l_d/2; %threshold distance for crossings, the radius of the Ig Domain if assumed to be a spherical shape

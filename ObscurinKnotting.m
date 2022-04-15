@@ -14,7 +14,7 @@
 %           angle between the linker to the next domain
 % N - number of nodes which include a domain and a linker
 
-sims=10;
+sims=1000000;
 x_range = zeros(1,sims);
 y_range = zeros(1,sims);
 crossings = zeros(1,sims);
@@ -194,12 +194,12 @@ toc
 
 
 % Save data into txt file
-% % M=zeros(sims,6);
-% % M(:,1)=x_range;
-% % M(:,2)=y_range;
-% % M(:,3)=crossings;
-% % M(:,4)=crossings/N;
-% % M(:,5)=num4Cluster;
-% % M(:,6)=num5Cluster;
-% % csvwrite('MillionSim2D.txt',M); %NOTE! This will overwrite exisiting file
+M=zeros(sims,6);
+M(:,1)=x_range;
+M(:,2)=y_range;
+M(:,3)=crossings;
+M(:,4)=crossings/N;
+M(:,5)=num4Cluster;
+M(:,6)=num5Cluster;
+csvwrite('MillionSim2D.txt',M); %NOTE! This will overwrite exisiting file
 
