@@ -37,52 +37,53 @@ l_d = 33;
 N = 18; %number of IG domain-linker pairs, i.e. one node
 thresDist = l_d/2; %threshold distance for crossings, the radius of the Ig Domain if assumed to be a spherical shape
 
+R=l_d/2; % set radius of circle to search for clusters
+pt_num4=4;
+pt_num5=5;
+m=1;
+
 tic
 %for plotting the range of x, y, and z values
 x_range=zeros(1,sims);
 y_range=zeros(1,sims);
 z_range=zeros(1,sims);
 crossings=zeros(1,sims);
-vShort=zeros(1,3); %returns the vector of the shortest distance between line segments. Probably will never use.
+
 
 %-- MONTE CARLO--
 for sim = 1:sims
     % Initialize variables
-    phi = zeros(1,N);
-    x = zeros(1,N);
-    y = zeros(1,N);
-    z = zeros(1,N);
-    x_e = zeros(1,N);
-    y_e = zeros(1,N);
-    z_e = zeros(1,N);
-    xt = zeros(1,N);
-    yt = zeros(1,N);
-    zt = zeros(1,N);
-    theta = zeros(1,N);
-    phi = zeros(1,N);
+    X = zeros(3, N+1);
+    E = zeros(3,N);
+    
+    count=0;
 
 
     % Initialize the first position and angle of the first domain of node 1
-    x(1) = rand();
-    y(1) = rand();
-    z(1) = rand();
-    bimodal = round(rand()+1); % 50% probability of choosing bimodal distribution index 1 as 2
-    theta(1) = plus_minus*normrnd(mu_l2d(bimodal),s_l2d(bimodal));
-    %use spherical coordinate system where tau is the inclination and theta
-    %is the azimuth, and the magnitude is the radius
-    tau=plus_minus*rand()*pi; % random each time called
-    x_e(1)=x(1)+l_d*cos(theta(1))*sin(tau);
-    y_e(1)=y(1)+l_d*sin(theta(1))*sin(tau);
-    z_e(1)=z(1)+l_d*cos(tau);
-     
-    %###############CHECK#####################
-    if abs((sqrt((x_e(1)-x(1))^2+(y_e(1)-y(1))^2+(z_e(1)-z(1))^2))-l_d)>0.01 %defined tolerance of "equal"
-        disp("first node is not within tolerance of the length of the Ig doman (l_d)");
-    end
-    %#########################################
-
-    phi(1) = plus_minus * normrnd(mu_d2l,s_d2l);
-    tau=plus_minus*rand()*pi; % random each time called
+    X(:,1) = [rand(); rand(); rand()];
+    theta = plus_minus * rand()*pi; % random theta wrt the x axis
+    gamma = plus_minus * rand()*pi; % random gamma wrt to the y-axis
+    
+    E(:,1)=X(:,1) + l_d * [cos(theta); sin(theta)*cos(gamma); sin(theta)*sin(gamma)];
+    A=E(:,1)-X(:,1);
+norm(A) %should be l_d
+    
+    alpha=acos(A(1)/norm(A)); % angle of vector A wrt the x-axis for the rotation.
+    eP=[cos(alpha) sin(alpha) 0; -sin(alpha) cos(alpha) 0; 0 0 1]*E(:,1);
+    
+    phi = plus_minus * normrnd(mu_d2l,s_d2l); %angle wrt the rotated x-axis
+    phi = scaling(phi);
+    tau=plus_minus*rand()*pi; % random angle wrt the y-axis
+    
+    xP=eP+l_l*[cos(phi); sin(phi)*cos(tau); sin(phi)*sin(tau)];
+    
+    X(:,2)=[cos(alpha) -sin(alpha) 0; sin(alpha) cos(alpha) 0; 0 0 1]*xP;
+    
+    B=X(:,2)-E(:,1);
+    norm(B) % should be l_l
+    phi
+    acos(dot(A,B)/(norm(A)*norm(B)))
+    
     xt(1)=x_e(1)+l_l*cos(phi(1))*sin(tau);
     yt(1)=y_e(1)+l_l*sin(phi(1))*sin(tau);
     zt(1)=z_e(1)+l_l*cos(tau);
