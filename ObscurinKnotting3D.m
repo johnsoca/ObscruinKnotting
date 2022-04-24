@@ -22,7 +22,7 @@
 
 
 %--MONTE CARLO--
-sims=1000000;
+sims=1;
 %---------------
 
 % Angle distribution values
@@ -109,7 +109,12 @@ for sim = 1:sims
 
 
     end
-    
+% figure() %comment out if running monte carlo sims
+% for i=1:N
+%     plot3([X(1,i),E(1,i)],[X(2,i),E(2,i)],[X(3,i),E(3,i)],'k'); %plot one simulation for the final figure where the IG domain is green
+%     hold on
+%     plot3([E(1,i),X(1,i+1)],[E(2,i),X(2,i+1)],[E(3,i),X(3,i+1)],'color',[0,1,1]);% linker is cyan
+% end    
     
     x_range(sim)=max(X(1,:))-min(X(1,:));
     y_range(sim)=max(X(2,:))-min(X(2,:));
@@ -165,12 +170,12 @@ for sim = 1:sims
     D=zeros(1,N*2);
     P=[1:1:N*2];
     num5Cluster(sim)=0;
-% % figure() %comment out if running monte carlo sims
-% % for i=1:N
-% %     plot3([X(1,i),E(1,i)],[X(2,i),E(2,i)],[X(3,i),E(3,i)],'b');
-% %     hold on
-% %     plot3([E(1,i),X(1,i+1)],[E(2,i),X(2,i+1)],[E(3,i),X(3,i+1)],'r');
-% % end
+% figure() %comment out if running monte carlo sims
+% for i=1:N
+%     plot3([X(1,i),E(1,i)],[X(2,i),E(2,i)],[X(3,i),E(3,i)],[60,180,75]); %plot one simulation for the final figure where the IG domain is green
+%     hold on
+%     plot3([E(1,i),X(1,i+1)],[E(2,i),X(2,i+1)],[E(3,i),X(3,i+1)],[70,240,240]);% linker is cyan
+% end
     for i=1:N*2
         if P(i) ~=0
             D=sqrt((L(1,P(i))-L(1,:)).^2+(L(2,P(i))-L(2,:)).^2+(L(3,P(i))-L(3,:)).^2);
@@ -192,28 +197,28 @@ for sim = 1:sims
     
 end
 toc
-figure()
-hist(x_range)
-figure()
-hist(y_range)
-figure()
-hist(z_range)
-figure()
-hist(crossings)
-figure()
-hist(num4Cluster)
-figure()
-hist(num5Cluster)
-
-% Save data into txt file
-M=zeros(sims,6);
-M(:,1)=x_range;
-M(:,2)=y_range;
-M(:,3)=z_range;
-M(:,4)=crossings;
-M(:,5)=num4Cluster;
-M(:,6)=num5Cluster;
-csvwrite('MillionSim3D.txt',M); %NOTE! This will overwrite exisiting file
+% figure()
+% hist(x_range)
+% figure()
+% hist(y_range)
+% figure()
+% hist(z_range)
+% figure()
+% hist(crossings)
+% figure()
+% hist(num4Cluster)
+% figure()
+% hist(num5Cluster)
+% 
+% % Save data into txt file
+% M=zeros(sims,6);
+% M(:,1)=x_range;
+% M(:,2)=y_range;
+% M(:,3)=z_range;
+% M(:,4)=crossings;
+% M(:,5)=num4Cluster;
+% M(:,6)=num5Cluster;
+% csvwrite('MillionSim3D.txt',M); %NOTE! This will overwrite exisiting file
 
     
     
