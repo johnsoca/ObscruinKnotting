@@ -13,7 +13,7 @@ names(MillionSim3D) <- c("xRange","yRange","zRange","crossings", "num4Cluster", 
 test0 <- MillionSim3D %>% pivot_longer(cols = c("xRange","yRange","zRange"),names_to="type") %>% select(-crossings) %>% select(-num4Cluster) %>% select(-num5Cluster)
 test <- MillionSim3D %>% pivot_longer(cols = c("num4Cluster", "num5Cluster"),names_to="type") %>% select(-xRange) %>% select(-yRange) %>% select(-zRange) %>% select(-crossings)
 
-p0 <- test0 %>% ggplot(aes(x=value,fill=type))+geom_histogram(color="#e9ecef",alpha=0.6,position= 'identity',bins=50) +
+p0 <- test0 %>% ggplot(aes(x=value,fill=type))+geom_histogram(color="#e9ecef",alpha=0.3,position= 'identity',bins=50) +
   scale_fill_manual(values=c("#69b3a2","#f485aa","#404080")) + theme_ipsum() + labs(fill="") + labs(x="Maximum spread in Angstroms",y="Number of simulations")
 p0
 ggsave("RangesIn3D.tiff",plot = last_plot(), width = 5, height =5, device = 'tiff', dpi=700)
@@ -22,7 +22,7 @@ q<-MillionSim3D %>% ggplot(aes(x=crossings))+geom_histogram(color="#e9ecef",fill
 q
 ggsave("CrossingsIn3D.tiff",plot = last_plot(), width = 5, height =5, device = 'tiff', dpi=700)
 
-p <- test %>% ggplot(aes(x=value, fill=type))+geom_histogram(color="#e9ecef",alpha=0.6, position='dodge',bins=50, binwidth=5) + 
+p <- test %>% ggplot(aes(x=value, fill=type))+geom_histogram(color="#e9ecef",alpha=0.6, position='dodge',bins=50, binwidth=1) + 
   scale_fill_manual(values=c("#9a33ff", "#ff9a33"))+theme_ipsum() + labs(fill="") + labs(x="Number of clusters", y="Number of simulations")
 p
 ggsave("ClusterComparison3D.tiff", plot = last_plot(), width =5, height=5, device='tiff',dpi=700)
