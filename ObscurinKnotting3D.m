@@ -206,13 +206,13 @@ figure()
 hist(num5Cluster)
 
 % Save data into txt file
-M=zeros(sims,7);
+M=zeros(sims,6);
 M(:,1)=x_range;
 M(:,2)=y_range;
 M(:,3)=z_range;
 M(:,4)=crossings;
-M(:,6)=num4Cluster;
-M(:,7)=num5Cluster;
+M(:,5)=num4Cluster;
+M(:,6)=num5Cluster;
 csvwrite('MillionSim3D.txt',M); %NOTE! This will overwrite exisiting file
 
     
